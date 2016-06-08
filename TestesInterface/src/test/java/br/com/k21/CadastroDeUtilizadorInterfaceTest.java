@@ -9,6 +9,8 @@ import junit.framework.Assert;
 
 public class CadastroDeUtilizadorInterfaceTest extends FluentTest {
 	
+	private static final int TIMEOUT_DEFAULT = 5000;
+
 	@Override
 	public WebDriver getDefaultDriver() {
 		return new ChromeDriver();
@@ -27,12 +29,20 @@ public class CadastroDeUtilizadorInterfaceTest extends FluentTest {
 		
 		
 		executeScript("$('#paymentMethod_booklet').click();");
-		
-		Assert.assertEquals("Tarifa de boleto = R$ 1,00", findFirst("#bookletTax").getText());
+		await()
+		.atMost(TIMEOUT_DEFAULT)
+		.until("#bookletTax")
+		.containsText("Tarifa de boleto = R$ 1,00");
+	
 		
 		Assert.assertEquals("719,80", findFirst("#cartTotalAmount").getText());
 		
 		click("#continueToPayment");
+		
+		await()
+			.atMost(5000)
+			.until("#sucessMessage")
+			.containsText("Aguardando confirmação do pagamento.");
 		
 		Assert.assertEquals("Aguardando confirmação do pagamento.", 
 				findFirst("#successMessage").getText());
